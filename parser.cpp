@@ -44,14 +44,42 @@ bool noun(tokentype thetype, string word)
 }
 bool verb(tokentype thetype, string word)
 {
+  cout << "Processing <verb>" << endl;
+  if(match(thetype, WORD2))
+    cout << "Matched WORD2" << endl;
+  else
+    syntaxerror2(word, "verb");
+  return true;
 }
-
+//Done by: Alex Shershnv
 bool tense()//(tokentype thetype, string word)
 {
+  cout << "Processing <tense>" << endl;
+  
+  if(match(thetype, VERBPAST))
+    cout << "Matched VERBPAST" << endl;
+  else if(match(thetype, VERB))
+    cout << "Matched VERB" << endl;
+  else if(match(thetype, VERBNEG))
+    cout << "Matched VERBNEG" << endl;
+  else if(match(thetype, VERBPASTNEG))
+    cout << "Matched VERBPASTNEG" << endl;
+  else
+    syntaxerror2(word, "tense");
+  return true;
+    
 }
+//Done by: Alex Shershnov
 bool be(toketype thetype, string word)
 {
-
+  cout << "Processing <be>" << endl;
+  if(match(thetype, IS))
+    cout << "Matched IS" << endl;
+  else if(match(thetype, WAS))
+    cout << "Matched WAS" << endl;
+  else
+    syntaxerror2(word, "be");
+  return true;
 }
 bool s()
 {
