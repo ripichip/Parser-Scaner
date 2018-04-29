@@ -189,7 +189,7 @@ bool match(token_type expected)
 
 
 //Done by: Alex Shershnov
-bool noun(token_type thetype, string word)
+bool noun(token_type& thetype, string& word)
 {
   cout << "Processing <noun>" << endl;
   if(match(PRONOUN)){
@@ -204,7 +204,8 @@ bool noun(token_type thetype, string word)
   }
 }
 
-bool subject(token_type thetype, string word){
+//Done by: Joshua Cantero
+bool subject(token_type& thetype, string& word){
   if(match(SUBJECT)){
      cout << "Matched SUBJECT" << endl;
     return true;
@@ -213,14 +214,178 @@ bool subject(token_type thetype, string word){
     return false;
   }
 }
+/*
+  1. <s> ::= [CONNECTOR] <noun> SUBJECT <verbOrNoun1>  
+  2. <verbOrNoun1> ::= <verb> <tense> PERIOD | <noun> <beDestOrObj>
+  3. <beDestOrObj>::= <be> PERIOD | DESTINATION  <verb> <tense> PERIOD | OBJECT <verbOrNoun2>
+  4. <verbOrNoun2> ::= <verb> <tense> PERIOD | <noun> DESTINATION <verb> <tense> PERIOD
+*/
 
-bool verbOrNoun1(thetype,word){
-
+//Done by: Alex Shershnov
+bool be(token_type& thetype, string& word)
+{
+  cout << "Processing <be>" << endl;
+  if(match(IS)){
+    cout << "Matched IS" << endl;
+    return true;
+  }
+  else if(match(WAS)){
+    cout << "Matched WAS" << endl;
+    return true;
+  }
+  else{
+    syntaxerror2(word, "be");
+    return false;
+  }
+  return false;
 }
 
+//Done by: Alex Shershnv
+bool verb(token_type& thetype, string& word)
+{
+  cout << "Processing <verb>" << endl;
+  if(match(WORD2)){
+    cout << "Matched WORD2" << endl;
+    return true;
+  }
+  else{
+    syntaxerror2(word, "verb");
+    return false;
+  }
+}
+//Done by: Alex Shershnv
+bool tense(token_type& thetype, string& word)//(tokentype thetype, string word)
+{
+  cout << "Processing <tense>" << endl;
+  
+  if(match(VERBPAST)){
+    cout << "Matched VERBPAST" << endl;
+    return true;
+  }
+  else if(match(VERB)){
+    cout << "Matched VERB" << endl;
+    return true;
+  }
+  else if(match(VERBNEG)){
+    cout << "Matched VERBNEG" << endl;
+    return true;
+  }
+  else if(match(VERBPASTNEG)){
+    cout << "Matched VERBPASTNEG" << endl;
+    return true;
+  }
+  else{
+    syntaxerror2(word, "tense");
+    return false;
+  }
+  // return true;   
+}
+
+//Done by: Joshua Cantero
+bool PERIODFUNC(token_type& thetype, string& word){
+  if(match(PERIOD)){
+    cout<<"Matched PERIOD"<<endl;
+    return true;
+  }else{
+    syntaxerror2(word, "PERIOD");
+    return false;
+  }
+}
+//Done by: Joshua Cantero
+bool DESTINATIONFUNC(token_type& thetype, string& word){
+  if(match(DESTINATION)){
+    cout<<"Matched DESTINATION"<<endl;
+    return true;
+  }else{
+    syntaxerror2(word, "DESTINATION");
+    return false;
+  }
+}
+
+//Done by: Joshua Cantero
+bool OBJECTFUNC(token_type& thetype, string& word){
+  if(match(OBJECT)){
+    cout<<"Matched OBJECT"<<endl;
+    return true;
+  }else{
+    syntaxerror2(word, "OBJECT");
+    return false;
+  }
+}
+
+// 4. <verbOrNoun2> ::= <verb> <tense> PERIOD | <noun> DESTINATION <verb> <tense> PERIOD
+//Done by: Joshua Cantero
+bool verbOrNoun2(token_type& thetype, string& word){
+  if(verb(thetype,word)){
+    if(tense(thetype,word)){
+      if(PERIODFUNC(thetype,word)){
+        return true;
+      }
+    }
+  }else if(noun(thetype,word)){
+    if(DESTINATIONFUNC(thetype,word)){
+      if(verb(thetype,word)){
+        if(tense(thetype,word)){
+          if(PERIODFUNC(thetype,word)){
+            return true;
+          }
+        }
+      }
+    }
+  }else{
+    //Error
+    return false;
+  }
+  return false;
+}
+
+// 3. <beDestOrObj>::= <be> PERIOD | DESTINATION  <verb> <tense> PERIOD | OBJECT <verbOrNoun2>
+//Done by: Joshua Cantero
+bool beDestOrObj(token_type& thetype, string& word){
+  if(be(thetype,word)){
+    if(PERIODFUNC(thetype,word)){
+      return true;
+    }
+  }else if(DESTINATIONFUNC(thetype,word)){
+    if(verb(thetype,word)){
+      if(tense(thetype,word)){
+        if(PERIODFUNC(thetype,word)){
+          return true;
+        }
+      }
+    }
+  }else if(OBJECTFUNC(thetype,word)){
+    if(verbOrNoun2(thetype,word)){
+      return true;
+    }
+  }else{
+    //Error
+  }
+  return false;
+}
+
+//Done by: Joshua Cantero
+bool verbOrNoun1(token_type& thetype, string& word){
+  cout<<"Processing <verbOrNoun1>" << endl;
+  if(verb(thetype,word)){
+    if(tense(thetype,word)){
+      if(PERIODFUNC(thetype,word)){
+        return true;
+      }
+    }
+  }else if(noun(thetype,word)){
+    if(beDestOrObj(thetype,word)){
+      return true;
+    }
+
+  }
+return false;
+}
+
+//Done by: Joshua Cantero
 bool s(token_type& thetype, string& word){
   //Call noun
-  cout<<"Processing <s>" << endl;
+  cout<<"\nProcessing <s>" << endl;
   /*Scanner sets new word that's read and also sets the token type*/
   if(noun(thetype,word)){
      if(subject(thetype,word)){
@@ -235,6 +400,7 @@ bool s(token_type& thetype, string& word){
   return false;
 }
 
+//Done by: Joshua Cantero
 void story(){
   cout<<"Processing <story>\n"<<endl;
   token_type a;
