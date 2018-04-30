@@ -224,7 +224,7 @@ bool subject(token_type& thetype, string& word){
     cout << "Matched SUBJECT" << endl;
     return true;
   }else{
-    syntaxerror1(word, "SUBJECT");
+    syntaxerror1("SUBJECT", word);
     return false;
   }
 }
@@ -301,7 +301,7 @@ bool PERIODFUNC(token_type& thetype, string& word){
     cout<<"Matched PERIOD"<<endl;
     return true;
   }else{
-    syntaxerror1(word, "PERIOD");
+    syntaxerror2(word, "PERIOD");
     return false;
   }
 }
